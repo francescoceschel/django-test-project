@@ -1,0 +1,101 @@
+# SETUP THE DJANGO PROJECT
+# Install these must-have packages and setup the environment.
+# Make sure you are in the right folder dedicated to the project
+pip install --upgrade distro-info
+pip3 install --upgrade pip==23.2.1
+pip install virtualenv
+virtualenv djangoenv
+source djangoenv/bin/activate
+
+# Install Django 
+pip install Django
+
+# Once the installation is finished, you can create your first Django project by running:
+django-admin startproject firstproject
+
+# A folder called firstproject will be created which is a container wrapping up settings and configurations for a Django project.
+# To run the development server, navigate to the project directory:
+cd firstproject
+
+# and create a Django app called firstapp within the project
+python3 manage.py startapp firstapp
+
+# Django created a project scaffold for you containing your first firstapp app.
+#The scaffold contains the fundamental configuration and setting files for a Django project and app:
+
+  # For project-related files:
+      # manage.py is a command-line interface used to interact with the Django project to perform tasks such as starting the server, migrating models, and so on.
+      # firstproject/settings.py contains the settings and configurations information.
+      # firstproject/urls.py contains the URL and route definitions of your Django apps within the project.
+    
+  # For app-related files:
+      # firstapp/admin.py: is for building an admin site
+      # firstapp/models.py: contains model classes
+      # firstapp/views.py: contains view functions/classes
+      # firstapp/urls.py: contains URL declarations and routing for the app
+      # firstapp/apps.py: contains configuration metadata for the app
+      # firstapp/migrations/: model migration scripts folder
+
+# Before starting the app, you will to perform migrations to create necessary database tables:
+python3 manage.py makemigrations
+# and run migrations to apply the changes to the database:
+python3 manage.py migrate
+
+# Then start a development server hosting apps in the firstproject:
+python3 manage.py runserver
+# You can access the development server at http://127.0.0.1:8000/
+# When developing Django apps, in most cases Django will automatically load the updated files and restart the development server.
+# However, it might be safer to restart the server manually if you add/delete files in your project.
+# Control + C or Ctrl + C in the terminal
+
+# Open firstproject/settings.py file.
+# Find INSTALLED_APPS section, and add a new app entry as
+'firstapp.apps.FirstappConfig',
+# This will tell Django to include the firstapp app in the project and make it available for use.
+# Next, we need to add the urls.py of firstapp to firstproject so that views of firstapp can be properly routed.
+# Create an empty urls.py under firstapp folder
+cd firstapp # Make sure you are in firstapp directory
+touch urls.py
+
+# Open firstproject/urls.py, you can find a path function: from django.urls import path, has been already imported.
+# Now also import an include method from django.urls package:
+from django.urls import include, path
+# Then add a new path to include the urls.py of firstapp:
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('firstapp/', include('firstapp.urls')), # This will include the urls.py of firstapp and route the views of firstapp to the root URL of the project.
+] 
+
+# Now you can create your first view to receive HTTPRequest and return a HTTPResponse wrapping a simple HTML page as its content.
+# Open firstapp/views.py, write your first view after the comment # Create your views here.
+from django.http import HttpResponse
+
+def index(request):
+    # Create a simple html page as a string
+    template = "<html>" \
+                "This is your first view" \
+               "</html>"
+    # Return the template as content argument in HTTP response
+    return HttpResponse(content=template)
+
+# Next, configure the URL for the index view.
+# Open firstapp/urls.py, add the following code:
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # Create a path object defining the URL pattern to the index view
+    path(route='', view=views.index, name='index'),
+]
+
+# That's it, now let's test your first view.
+# Run Django server if not started:
+cd ..
+python3 manage.py runserver
+
+# This part misses how to run the app outside of the Theia IDE in Coursera.
+
+# Django will map any HTTP requests starting with /firstapp to firstapp and search any matches for paths defined in firstapp/urls.py.
+# That's it, you should see your the HTTPResponse returned by your first view, 
+# which is a simple HTML page with content This is your first view.
+

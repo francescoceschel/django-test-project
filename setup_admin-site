@@ -1,0 +1,65 @@
+# Follow the instructions to starup a project up to the point where you create the DB.
+# Then follow these instructions.
+
+# Before you can access admin site, you will need to create a super user for the admin site.
+# Run this command to create a new superuser:
+python3 manage.py createsuperuser
+
+# Il will ask you to input:
+    # user
+    # email
+    # psw
+
+# After you can start our app and login with the super user.
+# Start the development server
+python3 manage.py runserver
+
+# NB the instructions above are given according to the lab carried out in Coursera.
+# Therefore, to sturtup the admin site in your own environment you have to go on the address specified in the shell.
+# When the browser tab opens, add the /admin path and your full URL should look like the following:
+# https://userid-8000.theiadocker-1.proxy.cognitiveclass.ai/admin [the address is the one from theia]
+
+# Once you register models defined in adminsite/models.py with admin site, you can then create managing pages for those models.
+# Open adminsite/admin.py, and register Course and Instructor models
+admin.site.register(Course)
+admin.site.register(Instructor)
+
+# Now refresh the admin site, and you should be able to see Courses and Instructors under ADMINSITE section.
+
+# You may only want to include some of the model fields in the admin site.
+# To select the fields to be included, we create a ModelAdmin class and add a fields list with the field names to be included.
+# Open adminsite/admin.py, add a CourseAdmin class:
+class CourseAdmin(admin.ModelAdmin):
+    fields = ['pub_date', 'name', 'description']
+
+# Update previous course registration admin.site.register(Course) with the CourseAdmin class:
+admin.site.register(Course, CourseAdmin)
+
+# The file administrative/admin.py should look like this:
+from django.contrib import admin
+from .models import Course, Instructor, Lesson
+
+class CourseAdmin(admin.ModelAdmin):
+    fields = ['pub_date', 'name', 'description']
+
+admin.site.register(Course, CourseAdmin)
+admin.site.register(Instructor)
+
+# In previous instructions, we explained how to include user model, which acts as a parent model for instructor, and you can add such related object while creating an Instructor object.
+# Django admin provides a convenient way to associate related objects on a single model managing page.
+# This can be done by defining Inline classes.
+# For example, let see how to manage Lesson model together with Course model on Course admin page.
+# Relying on the Coursera course, follow these instructions:
+# Open adminsite/admin.py, add a LessonInline class before CourseAdmin:
+class LessonInline(admin.StackedInline):
+    model = Lesson 
+    extra = 5
+
+# Then, update CourseAdmin class by adding a inlines list
+class CourseAdmin(admin.ModelAdmin):
+    fields = ['pub_date', 'name', 'description']
+    inlines = [LessonInline]
+
+# Now you can see by adding the inlines list, you can adding lessons while creating a course.
+# Basically, you brought into the admin panel the possibility to create couirse and instructoirs, 
+# then, you associate "lessons" (child) to "course" (parent), thus crearting all of them from one panel. 
