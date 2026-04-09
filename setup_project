@@ -7,6 +7,9 @@ pip install virtualenv
 virtualenv djangoenv
 source djangoenv/bin/activate
 
+# Set up the Python runtime and test the template project.
+pip install -U -r requirements.txt
+
 # Install Django 
 pip install Django
 
@@ -36,13 +39,23 @@ python3 manage.py startapp firstapp
       # firstapp/apps.py: contains configuration metadata for the app
       # firstapp/migrations/: model migration scripts folder
 
+# Migrations are Django's way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
+# They are designed to be mostly automatic, but you will need to know when to make migrations, when to run them, and the common problems you might run into.
+# There are several commands which you will use to interact with migrations and Django's handling of database schema:
+  # migrate, which is responsible for applying and unapplying migrations
+  # makemigrations, which is responsible for creating new migrations based on the changes you have made to your models
+  # sqlmigrate, which displays the SQL statements for a migration
+  # showmigrations, which lists a project's migrations and their status
+
 # Before starting the app, you will to perform migrations to create necessary database tables:
 python3 manage.py makemigrations
+
 # and run migrations to apply the changes to the database:
 python3 manage.py migrate
 
 # Then start a development server hosting apps in the firstproject:
 python3 manage.py runserver
+
 # You can access the development server at http://127.0.0.1:8000/
 # When developing Django apps, in most cases Django will automatically load the updated files and restart the development server.
 # However, it might be safer to restart the server manually if you add/delete files in your project.
@@ -51,6 +64,7 @@ python3 manage.py runserver
 # Open firstproject/settings.py file.
 # Find INSTALLED_APPS section, and add a new app entry as
 'firstapp.apps.FirstappConfig',
+
 # This will tell Django to include the firstapp app in the project and make it available for use.
 # Next, we need to add the urls.py of firstapp to firstproject so that views of firstapp can be properly routed.
 # Create an empty urls.py under firstapp folder
@@ -60,6 +74,7 @@ touch urls.py
 # Open firstproject/urls.py, you can find a path function: from django.urls import path, has been already imported.
 # Now also import an include method from django.urls package:
 from django.urls import include, path
+
 # Then add a new path to include the urls.py of firstapp:
 urlpatterns = [
     path('admin/', admin.site.urls),
